@@ -1,16 +1,8 @@
-# emlak_app
 
-A new Flutter project.
+[screencast-Genymotion-2023-04-01_04.15.19.767.webm](https://user-images.githubusercontent.com/108594172/229302519-b43fa9fd-4806-408a-b4fb-adb0f8d2e11a.webm)
 
-## Getting Started
+<img src="https://user-images.githubusercontent.com/108594172/229302528-f7d184a5-3c17-4f30-8eb6-d343fa52f28f.png" width="900">
 
-This project is a starting point for a Flutter application.
+<img src="https://user-images.githubusercontent.com/108594172/229302515-11210d67-1348-40b9-99d0-1374bf6868df.png" width="900">
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img src="https://user-images.githubusercontent.com/108594172/229302516-dce5c3da-5609-4f86-9c58-2829b794eeda.png" width="900">
