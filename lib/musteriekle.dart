@@ -1,4 +1,3 @@
-
 import 'package:emlak_app/databaseHelper.dart';
 import 'package:flutter/material.dart';
 import 'model/musteri.dart';
@@ -12,14 +11,14 @@ class MusteriEkle extends StatefulWidget {
 }
 
 class _MusteriEkleState extends State<MusteriEkle> {
-
+  final DbHelper = DatabaseHelper.instance;
   final formkey = GlobalKey<FormState>();
   final formkey2 = GlobalKey<FormState>();
   String? ad;
   String? soyAd;
   String? telefon;
   String? adres;
-  DateTime? sozlesmeBaslangicTarihi;
+  String? sozlesmeBaslangicTarihi;
   int? sozlesmeSuresi;
   String? not;
   late TextEditingController _dateController;
@@ -183,8 +182,7 @@ class _MusteriEkleState extends State<MusteriEkle> {
                               TextFormField(
                                 onTap: () => _selectDate(context),
                                 onSaved: (newValue) {
-                                  sozlesmeBaslangicTarihi =
-                                      DateTime.tryParse(newValue.toString());
+                                  sozlesmeBaslangicTarihi = newValue.toString();
                                 },
                                 autovalidateMode: AutovalidateMode.always,
                                 validator: (deger) {
@@ -263,11 +261,18 @@ class _MusteriEkleState extends State<MusteriEkle> {
                                       formkey.currentState!.save();
 
                                       String result = "Kayıt Basarılı";
-                                      Data.veriekle(Musteri.create2(ad: ad!, soyAd: soyAd!, telefon: telefon!, adres: adres!, sozlesmeBaslangicTarihi: sozlesmeBaslangicTarihi!, sozlesmeSuresi: sozlesmeSuresi!, not: not!));
+                                      _insert(
+                                          ad,
+                                          soyAd,
+                                          telefon,
+                                          adres,
+                                          sozlesmeBaslangicTarihi,
+                                          sozlesmeSuresi,
+                                          not);
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                               SnackBar(content: Text(result)));
-                                         
+
                                       setState(() {});
                                     } else {
                                       String result =
@@ -412,8 +417,14 @@ class _MusteriEkleState extends State<MusteriEkle> {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                               SnackBar(content: Text(result)));
-                                               Data.veriekle(Musteri.create( ad:ad! , soyAd: soyAd!, telefon: telefon!,not: not!));
-
+                                      _insert(
+                                          ad,
+                                          soyAd,
+                                          telefon,
+                                          adres,
+                                          sozlesmeBaslangicTarihi,
+                                          sozlesmeSuresi,
+                                          not);
                                       setState(() {});
                                     } else {
                                       String result =
@@ -442,5 +453,20 @@ class _MusteriEkleState extends State<MusteriEkle> {
             ],
           ),
         ));
+  }
+
+  void _insert(String? ad, String? soyAd, String? telefon, String? adres,
+      String? sozlesmeBaslangicTarihi, int? sozlesmeSuresi, String? not) async {
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnad: ad,
+      DatabaseHelper.columnsoyAd: soyAd,
+      DatabaseHelper.columntelefon: telefon,
+      DatabaseHelper.columnadres: adres,
+      DatabaseHelper.columnsozlesmeBaslangicTarihi: sozlesmeBaslangicTarihi,
+      DatabaseHelper.columnsozlesmeSuresi: sozlesmeSuresi,
+      DatabaseHelper.columnnot: not,
+    };
+    Musteri musteri = Musteri.fromMap(row);
+    final id = await DbHelper.insert(musteri);
   }
 }

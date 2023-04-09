@@ -18,12 +18,14 @@ class Musteriler extends StatefulWidget {
 class _MusterilerState extends State<Musteriler>
     with SingleTickerProviderStateMixin {
   late List<Musteri> _musteriler;
+  final DbHelper = DatabaseHelper.instance;
   late TabController _tabController;
 
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
-    _musteriler = Data.verilerigoster();
+    _musteriler = [];
+    _query();
     super.initState();
   }
 
@@ -35,6 +37,9 @@ class _MusterilerState extends State<Musteriler>
 
   @override
   Widget build(BuildContext context) {
+    setState(() {
+      _query();
+    });
     return Scaffold(
       appBar: TabBar(
         controller: _tabController,
@@ -63,7 +68,8 @@ class _MusterilerState extends State<Musteriler>
     int saatfarki = 0;
     if (musteri.sozlesmeBaslangicTarihi != null) {
       int eklenecekAy = musteri.sozlesmeSuresi!;
-      DateTime baslangicTarihi = musteri.sozlesmeBaslangicTarihi!;
+      DateTime baslangicTarihi =
+          DateTime.parse(musteri.sozlesmeBaslangicTarihi!);
       DateTime sozlesmeBitisTarihi = DateTime(baslangicTarihi.year,
           baslangicTarihi.month + eklenecekAy, baslangicTarihi.day);
       DateTime suaninTarihi = DateTime.now();
@@ -96,6 +102,7 @@ class _MusterilerState extends State<Musteriler>
               child: const Text('Evet'),
               onPressed: () {
                 _musteriler.remove(musteri);
+                DbHelper.delete(musteri.id!);
 
                 setState(() {});
                 // Silme işlemini burada gerçekleştirin
@@ -187,7 +194,7 @@ class _MusterilerState extends State<Musteriler>
                         Text("Adres : ${oankiMusteri.adres}",
                             style: Sabitler.cardTextStyle),
                         Text(
-                            "Sözleşme Başlangıç : ${oankiMusteri.sozlesmeBaslangicTarihi!.day}/${oankiMusteri.sozlesmeBaslangicTarihi!.month}/${sozlesmeliMusteriler[index].sozlesmeBaslangicTarihi!.year} ",
+                            "Sözleşme Başlangıç : ${DateTime.parse(oankiMusteri.sozlesmeBaslangicTarihi!).day}/${DateTime.parse(oankiMusteri.sozlesmeBaslangicTarihi!).month}/${DateTime.parse(oankiMusteri.sozlesmeBaslangicTarihi!).year} ",
                             style: Sabitler.cardTextStyle),
                         Text(
                             "Sözleşme Süresi : ${oankiMusteri.sozlesmeSuresi} Ay",
@@ -343,8 +350,7 @@ class _MusterilerState extends State<Musteriler>
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => MusteriGuncelle(
-                                          guncellenecekMusteri:
-                                              _musteriler[index],
+                                          guncellenecekMusteri: oankiMusteri,
                                           sozlesme: false,
                                         )),
                               );
@@ -382,7 +388,7 @@ class _MusterilerState extends State<Musteriler>
 
   bool sozlesmeBasladiMi(Musteri musteri) {
     DateTime suan = DateTime.now();
-    DateTime baslangicTarihi = musteri.sozlesmeBaslangicTarihi!;
+    DateTime baslangicTarihi = DateTime.parse(musteri.sozlesmeBaslangicTarihi!);
     bool basladi;
     Duration fark = baslangicTarihi.difference(suan);
     int gunfarki = fark.inHours;
@@ -462,5 +468,13 @@ class _MusterilerState extends State<Musteriler>
     } else {
       return Colors.blue;
     }
+  }
+
+  _query() async {
+    final allRows = await DbHelper.queryAllRows();
+    _musteriler.clear();
+    allRows.forEach((row) => _musteriler.add(Musteri.fromMap(row)));
+
+    setState(() {});
   }
 }

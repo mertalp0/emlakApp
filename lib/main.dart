@@ -5,7 +5,6 @@ import 'ekle.dart';
 import 'ilanlar.dart';
 import 'müsteriler.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
@@ -70,7 +69,7 @@ class _MyAppState extends State<MyApp> {
                     ),
                     Text(
                       'Tüm Evler',
-                      style:Sabitler.yaziFont1,
+                      style: Sabitler.yaziFont1,
                     ),
                   ],
                 ),
@@ -189,7 +188,6 @@ class _MyAppState extends State<MyApp> {
                 label: 'Müşteriler',
               ),
 
-             
               BottomNavigationBarItem(
                 icon: Icon(
                   Icons.add,
@@ -197,7 +195,7 @@ class _MyAppState extends State<MyApp> {
                 ),
                 label: 'Ekle',
               ),
-               BottomNavigationBarItem(
+              BottomNavigationBarItem(
                 icon: Icon(Icons.home),
                 label: 'Evlerim',
               ),

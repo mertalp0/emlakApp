@@ -1,21 +1,21 @@
-
-
 import 'package:flutter/material.dart';
+import 'databaseHelper.dart';
 import 'model/musteri.dart';
 
 // ignore: must_be_immutable
 class MusteriGuncelle extends StatefulWidget {
   Musteri guncellenecekMusteri;
-  bool sozlesme ; 
+  bool sozlesme;
 
-  MusteriGuncelle({required this.guncellenecekMusteri,required this.sozlesme, super.key});
+  MusteriGuncelle(
+      {required this.guncellenecekMusteri, required this.sozlesme, super.key});
 
   @override
   State<MusteriGuncelle> createState() => _MusteriGuncelleState();
 }
 
 class _MusteriGuncelleState extends State<MusteriGuncelle> {
-
+  final DbHelper = DatabaseHelper.instance;
   final _formKey = GlobalKey<FormState>();
   late String _ad;
   late String _soyAd;
@@ -38,7 +38,7 @@ class _MusteriGuncelleState extends State<MusteriGuncelle> {
   @override
   void initState() {
     super.initState();
-   
+
     _adController = TextEditingController(text: widget.guncellenecekMusteri.ad);
     _telefonController =
         TextEditingController(text: widget.guncellenecekMusteri.telefon);
@@ -79,44 +79,20 @@ class _MusteriGuncelleState extends State<MusteriGuncelle> {
   }
 
   void _onSavePressed() {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isEditing = false;
-        _ad = _adController!.text;
-        _telefon = _telefonController!.text;
-        _soyAd = _soyAdController!.text;
-        _adres = _adresController!.text;
-        _sozlesmeBaslangicTarihi = _sozlemeBaslangicTarihiController!.text;
-        _sozlesmeSuresi = _sozlemeBaslangicTarihiController!.text;
-      });
-      String result = "Güncelleme Başarılı";
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(result)));
-      try {
-       if(widget.sozlesme){
-         Musteri a = Musteri.create2(
-            ad: _ad,
-            soyAd: _soyAd,
-            telefon: _telefon,
-            adres: _adres,
-            sozlesmeBaslangicTarihi: DateTime.parse(_sozlesmeBaslangicTarihi),
-            sozlesmeSuresi: int.parse(_sozlesmeSuresi),
-            not: _not);
-        debugPrint(a.ad);
-       }
-       else{
-        Musteri a = Musteri.create(
-            ad: _ad,
-            soyAd: _soyAd,
-            telefon: _telefon,        
-            not: _not);
-        debugPrint(a.ad);
+    setState(() {
+      _isEditing = false;
+    });
+    int id = widget.guncellenecekMusteri.id!;
+    String ad = _adController!.text;
+    String soyAd = _soyAdController!.text;
+    String telefon = _telefonController!.text;
+    String adres = _adresController!.text;
+    String sozlesmeBaslangicTarihi = _sozlemeBaslangicTarihiController!.text;
+    String sozlesmeSuresi = _sozlesmeSuresiController!.text;
+    String not = _notController!.text;
 
-       }
-      } catch (e) {
-        debugPrint('Hata oluştu: $e');
-      }
-    }
+    _update(id, ad, soyAd, telefon, adres, sozlesmeBaslangicTarihi,
+        sozlesmeSuresi, not);
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -195,7 +171,7 @@ class _MusteriGuncelleState extends State<MusteriGuncelle> {
                       return null;
                     },
                   ),
-                  if (_sozlesmeSuresiController!.text != "null")
+                  if (widget.sozlesme)
                     TextFormField(
                       enabled: _isEditing,
                       controller: _adresController,
@@ -207,7 +183,7 @@ class _MusteriGuncelleState extends State<MusteriGuncelle> {
                         return null;
                       },
                     ),
-                  if (_sozlesmeSuresiController!.text != "null")
+                  if (widget.sozlesme)
                     TextFormField(
                       enabled: _isEditing,
                       onTap: () => _selectDate(context),
@@ -231,12 +207,13 @@ class _MusteriGuncelleState extends State<MusteriGuncelle> {
                         labelText: "Sözleşme Başlangıç Tarihi",
                       ),
                     ),
-                  if (_sozlesmeSuresiController!.text != "null")
+                  if (widget.sozlesme)
                     TextFormField(
                       keyboardType: TextInputType.number,
                       enabled: _isEditing,
                       controller: _sozlesmeSuresiController,
-                      decoration: const InputDecoration(labelText: 'Kontrat Süresi'),
+                      decoration:
+                          const InputDecoration(labelText: 'Kontrat Süresi'),
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Kontrat Süresi boş olamaz';
@@ -256,5 +233,17 @@ class _MusteriGuncelleState extends State<MusteriGuncelle> {
         ),
       ),
     );
+  }
+
+  void _update(int id, String ad, String soyAd, String telefon, String adres,
+      String sozlesmeBaslangicTarihi, String sozlesmeSuresi, String not) async {
+    Musteri musteri;
+    if (sozlesmeSuresi == 'null') {
+      musteri = Musteri(id, ad, soyAd, telefon, null, null, null, not);
+    } else {
+      musteri = Musteri(id, ad, soyAd, telefon, adres, sozlesmeBaslangicTarihi,
+          int.parse(sozlesmeSuresi), not);
+    }
+    final rowsAffected = await DbHelper.update(musteri);
   }
 }
